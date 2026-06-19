@@ -13,13 +13,15 @@ const AnimatedTitle = ({ title, containerClass }) => {
 
     useEffect(() => {
 
-        const ctx = gsap.context(() => {   // It scopes all selectors to a specific element. In our case it GSAP only looks inside: <div ref={containerRef}
+        const ctx = gsap.context(() => {   // It scopes all selectors to a specific element. In our case the GSAP only looks inside: <div ref={containerRef}>
+                                           //  Also in this component you don't need to use this context().
             const titleAnimation = gsap.timeline({
                 scrollTrigger: {
                     trigger: containerRef.current,
                     start: "100 bottom",  // Animation starts 100px from the top of the trigger touches, the bottom of the viewport
                     end: 'center bottom',
-                    toggleActions: 'play none none reverse'  // "Trigger enters viewport   Trigger leaves viewport   Trigger leaves viewport(scrolling upward)   Trigger re-enters viewport" 
+                    toggleActions: 'play none none reverse'  // "Trigger enters viewport   Trigger leaves viewport   Trigger re-enters viewport(scrolling upward)   Trigger exits viewport from top(scrolling upward)"
+                                           // Note: Above toggleActions is important because if you don't use it then the animation will work only one time. 
                 }             
             });
 
@@ -38,9 +40,9 @@ const AnimatedTitle = ({ title, containerClass }) => {
 
 
   return (
-    <div
-       ref={containerRef} 
-       className={clsx('animated-title', containerClass)}>
+     <div
+         ref={containerRef} 
+         className={clsx('animated-title', containerClass)}>
         {
             title.split('<br />').map((line, index) => (
                 <div
@@ -54,7 +56,6 @@ const AnimatedTitle = ({ title, containerClass }) => {
                               className='animated-word'
                               dangerouslySetInnerHTML={{__html: word}}
                             />
-
                         ))
                     }
                 </div>
